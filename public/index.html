@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OOPPLC Logistics & Supply Chain Reporting System</title>
+<style>
+:root{--navy:#123b5d;--blue:#1f5f8b;--ink:#172b3a;--muted:#667085;--bg:#f4f7fa;--card:#fff;--line:#dbe3ea;--green:#087443;--amber:#a15c00;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:18px 20px}
+header h1{margin:0;font-size:22px}header p{margin:5px 0 0;font-size:12px}
+nav{display:flex;gap:6px;flex-wrap:wrap;background:#fff;padding:9px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:0;background:#edf2f7;color:#334e68;padding:9px 13px;border-radius:7px;cursor:pointer;font-weight:bold}
+nav button.active{background:var(--blue);color:#fff}
+main{max-width:1500px;margin:auto;padding:16px}.view{display:none}.view.active{display:block}
+.panel,.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 11px}h3{font-size:13px;margin:15px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px}
+label{display:block;font-size:11px;font-weight:bold;color:#475467;margin-bottom:4px}
+input,select,textarea{width:100%;padding:8px;border:1px solid #cfd8e3;border-radius:6px;font:inherit;font-size:12px}
+textarea{min-height:65px}.wide{grid-column:1/-1}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.btn{border:0;border-radius:7px;padding:9px 13px;cursor:pointer;font-weight:bold;font-size:12px}
+.primary{background:var(--blue);color:#fff}.secondary{background:#e9eef3;color:#243b53}.danger{background:#fee4e2;color:var(--red)}.warning{background:#fff4df;color:var(--amber)}
+.green{background:var(--green);color:#fff}
+.btn-sm{padding:4px 8px;font-size:11px;border-radius:4px;border:0;cursor:pointer;font-weight:bold;margin-right:4px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:14px}
+.kpi .n{font-size:21px;font-weight:900;margin-top:4px}.kpi .l{font-size:10px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.metric{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #edf0f2;font-size:11px}
+.alert{padding:9px;border-left:4px solid var(--red);background:#fff5f4;border-radius:6px;margin:6px 0;font-size:11px}
+.ok{color:var(--green);font-weight:bold}.warn{color:var(--amber);font-weight:bold}.bad{color:var(--red);font-weight:bold}
+.tablewrap{overflow:auto;max-height:620px}table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{padding:7px;border-bottom:1px solid #edf0f2;text-align:left;vertical-align:top}th{background:#f1f4f7;position:sticky;top:0;z-index:1}
+.small{font-size:10px;color:var(--muted)}.report-title{text-align:center;margin-bottom:12px}
+.summarybox{background:#f8fafc;border:1px solid var(--line);padding:11px;border-radius:7px;margin-bottom:10px}
+.section-title{background:#edf2f7;padding:7px 9px;border-radius:6px;font-weight:bold;font-size:12px;margin-top:13px}
+.badge{display:inline-block;padding:3px 6px;border-radius:10px;font-weight:bold;font-size:10px}
+.b-ok{background:#e7f6ee;color:var(--green)}.b-warn{background:#fff4df;color:var(--amber)}.b-bad{background:#fee4e2;color:var(--red)}.b-neutral{background:#edf2f7;color:#475467}
+.report-footer{margin-top:18px;padding-top:10px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+@media(max-width:900px){.two,.three{grid-template-columns:1fr}}
+@media print{nav,.no-print,header p{display:none!important}body{background:#fff}main{padding:0}.panel{border:0}.view{display:none!important}.view.active{display:block!important}.tablewrap{max-height:none;overflow:visible}button{display:none!important}}
+
+.entry-message-ok{color:var(--green);font-weight:bold;padding:8px;background:#edf9f2;border-radius:6px}
+.entry-message-err{color:var(--red);font-weight:bold;padding:8px;background:#fff5f4;border-radius:6px}
+
+.muted{font-size:11px;color:var(--muted);font-weight:bold}
+#masterdata .section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#edf2f7;padding:10px 12px;border-radius:6px;margin-top:0}
+#masterdata .section-title h2,#masterdata .section-title h3{margin:0}
+#masterdata .section-title p{margin:4px 0 0}
+#masterdata hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+
+.badge-handover{background:#e0f0ff;color:#0b4a8f}
+.badge-retrieval{background:#fdecd7;color:#8a4b00}
+</style>
+</head>
+<body>
+
+<div id="loginPage" style="display:block;max-width:520px;margin:70px auto;padding:16px;">
+  <div class="panel">
+    <h2>OOPPLC Logistics & Supply Chain Management</h2>
+    <p class="small">Secure Login</p>
+    <div class="grid">
+      <div class="wide">
+        <label>Username</label>
+        <input type="text" id="loginUsername" autocomplete="username" placeholder="Enter username">
+      </div>
+      <div class="wide">
+        <label>Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" placeholder="Enter password">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="login()">Login</button>
+    </div>
+    <div id="loginMessage" class="small" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<header>
+<h1>OOPPLC Logistics & Supply Chain Management</h1>
+<p>Daily operational control • management reporting • exceptions • follow-up • registers</p>
+</header>
+
+<nav>
+<button id="nav-dashboard" onclick="show('dashboard')">Dashboard</button>
+<button id="nav-entry" onclick="show('entry')">Daily Entry</button>
+<button id="nav-handover" onclick="show('handover')">Asset Handover</button>
+<button id="nav-report" onclick="show('report')">Management Report</button>
+<button id="nav-registers" onclick="show('registers')">Registers</button>
+<button id="nav-masterdata" onclick="show('masterdata')">Master Data</button>
+<button id="nav-data" onclick="show('data')">Data / Export</button>
+<button class="btn secondary" onclick="logout()" style="margin-left:auto;">Logout</button>
+</nav>
+
+<main>
+<section id="dashboard" class="view active">
+<div class="panel no-print"><div class="grid">
+<div><label>Report Date</label><input type="date" id="dashDate"></div>
+<div><label>Estate / Location</label><select id="dashEstate"><option value="">All Estates</option></select></div>
+<div><label>Quick Action</label><button class="btn primary" onclick="show('entry')">+ Enter Activity</button></div>
+</div></div>
+<div class="kpis" id="kpis"></div>
+<div class="two">
+<div class="panel"><h2>Key Exceptions Requiring Action</h2><div id="exceptions"></div></div>
+<div class="panel"><h2>Daily Close-Out</h2><div id="closeout"></div></div>
+</div>
+<div class="three">
+<div class="panel"><h2>Activity by Category</h2><div id="categorySummary"></div></div>
+<div class="panel"><h2>Follow-Up Tracker</h2><div id="followSummary"></div></div>
+<div class="panel"><h2>Management Snapshot</h2><div id="snapshot"></div></div>
+</div>
+</section>
+
+<section id="entry" class="view">
+<div class="panel">
+<h2 id="form-heading">Daily Logistics & Supply Chain Entry</h2>
+<p class="small">Enter one activity at a time. Select a category and the system will display only the fields required for that activity.</p>
+<input type="hidden" id="e-editing-id" value="">
+<div class="grid">
+<div><label>Date *</label><input type="date" id="e-date"></div>
+<div><label>Department *</label><input id="e-department" placeholder="e.g. Logistics / Maintenance"></div>
+<div><label>Estate / Location *</label>
+  <select id="e-estate"><option value="">Select Estate / Location</option></select>
+</div>
+<div><label>Activity Category *</label><select id="e-category" onchange="renderCategoryFields()">
+<option>FFB Evacuation</option><option>Customers</option><option>Fleet Movement</option><option>Fuel</option><option>Procurement</option>
+<option>Maintenance</option><option>Preventive Maintenance</option><option>Contractor Performance</option><option>Other</option>
+</select></div>
+<div><label>Status *</label><select id="e-status"><option>Completed</option><option>In Progress</option><option>Pending</option><option>Delayed</option><option>Breakdown</option><option>Critical</option></select></div>
+<div><label>Priority</label><select id="e-priority"><option>Normal</option><option>High</option><option>Critical</option></select></div>
+<div><label>Record / Reported By</label><input id="e-reporter"></div>
+<div id="categoryFields" class="wide"></div>
+<div class="wide"><label>Issue / Constraint / Observation</label><textarea id="e-issue"></textarea></div>
+<div class="wide"><label>Action Taken / Required</label><textarea id="e-action"></textarea></div>
+<div><label>Responsible Officer for Follow-Up</label><input id="e-officer"></div>
+<div><label>Expected Completion Date</label><input type="date" id="e-due"></div>
+<div class="wide"><label>Additional Remarks</label><textarea id="e-remarks"></textarea></div>
+</div>
+<div class="actions">
+<button class="btn primary" id="btn-save" onclick="saveEntry()">Save Activity</button>
+<button class="btn secondary" onclick="clearEntry()">Clear Form</button>
+<button class="btn green" onclick="saveAndNew()">Save & Enter Another</button>
+</div>
+<div id="entryMessage" class="small" style="margin-top:10px;"></div>
+</div>
+<div class="panel"><h2>Recent Daily Entries</h2><div class="tablewrap" id="recentEntries"></div></div>
+</section>
+
+<!-- =========================================================
+     ASSET HANDOVER / RETRIEVAL
+     ========================================================= -->
+<section id="handover" class="view">
+  <div class="panel">
+    <h2 id="handover-form-title">Company Asset Handover / Retrieval</h2>
+    <p class="small">Record the handover or retrieval of company assets (vehicles, motorcycles, tricycles, trucks) to or from staff.</p>
+    <input type="hidden" id="h-editing-id" value="">
+
+    <div class="grid">
+      <div><label>Transaction Type *</label>
+        <select id="h-type" onchange="toggleHandoverFields()">
+          <option value="">Select Handover / Retrieval</option>
+          <option value="Handover">Handover (Asset issued to staff)</option>
+          <option value="Retrieval">Retrieval (Asset returned by staff)</option>
+        </select>
+      </div>
+      <div><label>Date *</label><input type="date" id="h-date"></div>
+      <div><label>Staff Name *</label><input id="h-staff-name" placeholder="Full name of staff"></div>
+      <div><label>Staff Phone Number *</label><input type="tel" id="h-staff-phone" placeholder="+234..."></div>
+      <div><label>Asset Type *</label>
+        <select id="h-asset-type" onchange="toggleAssetTypeOther()">
+          <option value="">Select Asset Type</option>
+          <option>Vehicle</option>
+          <option>Motorcycle</option>
+          <option>Tricycle</option>
+          <option>Truck</option>
+          <option>Others</option>
+        </select>
+      </div>
+      <div id="h-asset-type-other-wrap" style="display:none;">
+        <label>Specify Asset Type *</label>
+        <input id="h-asset-type-other" placeholder="Describe the asset type">
+      </div>
+      <div><label>Make / Model</label><input id="h-make-model" placeholder="e.g. Toyota Hilux 2019"></div>
+      <div><label>Chassis Number</label><input id="h-chassis" placeholder="VIN / Chassis No."></div>
+      <div><label>Engine Number</label><input id="h-engine" placeholder="Engine No."></div>
+      <div><label>Registration Number</label><input id="h-registration" placeholder="Plate No."></div>
+      <div><label>Odometer Reading</label><input type="number" id="h-odometer" placeholder="Current reading"></div>
+      <div id="h-issued-by-wrap" style="display:none;">
+        <label>Issued By *</label>
+        <input id="h-issued-by" placeholder="Name of officer issuing the asset">
+      </div>
+      <div id="h-retrieved-by-wrap" style="display:none;">
+        <label>Retrieved By *</label>
+        <input id="h-retrieved-by" placeholder="Name of officer retrieving the asset">
+      </div>
+      <div class="wide"><label>Remarks</label><textarea id="h-remarks" placeholder="Condition of asset, accessories, notes..."></textarea></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="h-btn-save" onclick="saveHandover()">Save Record</button>
+      <button class="btn secondary" onclick="clearHandoverForm()">Clear Form</button>
+    </div>
+    <div id="handoverMessage" class="small" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Handover / Retrieval Register</h2>
+    <div class="grid">
+      <div><label>Filter Type</label>
+        <select id="h-filter-type" onchange="renderHandoverTable()">
+          <option value="">All Transactions</option>
+          <option value="Handover">Handover Only</option>
+          <option value="Retrieval">Retrieval Only</option>
+        </select>
+      </div>
+      <div><label>Search</label>
+        <input id="h-filter-search" oninput="renderHandoverTable()" placeholder="Staff, asset, registration, chassis...">
+      </div>
+    </div>
+    <div class="tablewrap" id="handoverTable"></div>
+  </div>
+</section>
+
+<section id="report" class="view">
+<div class="panel no-print">
+<div class="grid">
+<div><label>Report Timeframe</label>
+<select id="reportTimeframe" onchange="handleTimeframeChange()">
+<option value="daily">Daily Report</option>
+<option value="weekly">Weekly Report</option>
+<option value="monthly">Monthly Report</option>
+<option value="periodic">Periodic (Custom Date Range)</option>
+</select></div>
+<div id="singleDateBox"><label>Report Date</label><input type="date" id="reportDate"></div>
+<div id="rangeFromBox" style="display:none;"><label>From Date</label><input type="date" id="reportFrom"></div>
+<div id="rangeToBox" style="display:none;"><label>To Date</label><input type="date" id="reportTo"></div>
+<div><label>Estate / Location</label><select id="reportEstate"><option value="">All Estates</option></select></div>
+<div><label>Prepared By</label><input id="preparedBy" placeholder="Name / Designation"></div>
+</div>
+<div class="actions"><button class="btn primary" onclick="renderReport()">Generate Report</button><button class="btn secondary" onclick="window.print()">Print / Save PDF</button></div>
+</div>
+<div id="reportOutput"></div>
+</section>
+
+<section id="registers" class="view">
+<div class="panel no-print"><h2>Operational Registers</h2><div class="grid">
+<div><label>Register Category</label><select id="regType"><option value="all">All Activities</option><option>FFB Evacuation</option><option>Customers</option><option>Fleet Movement</option><option>Fuel</option><option>Procurement</option><option>Maintenance</option><option>Preventive Maintenance</option><option>Contractor Performance</option><option>Other</option></select></div>
+<div><label>From Date</label><input type="date" id="regFrom"></div><div><label>To Date</label><input type="date" id="regTo"></div>
+</div></div>
+<div class="panel"><div class="tablewrap" id="registerTable"></div></div>
+</section>
+
+<!-- MASTER DATA -->
+<section id="masterdata" class="view">
+  <div class="section-title">
+    <div>
+      <h2>Master Data</h2>
+      <p class="small">Manage approved reference information used by Logistics, Fleet, Procurement and Administration.</p>
+    </div>
+    <button class="btn secondary" onclick="exportMasterDataCSV()">Export Master Data</button>
+  </div>
+
+  <div class="kpis">
+    <div class="panel"><div class="muted">Fleet / Assets</div><h2 id="masterFleetCount">0</h2></div>
+    <div class="panel"><div class="muted">Drivers / Operators</div><h2 id="masterDriverCount">0</h2></div>
+    <div class="panel"><div class="muted">Locations</div><h2 id="masterLocationCount">0</h2></div>
+    <div class="panel"><div class="muted">Suppliers / Contractors</div><h2 id="masterSupplierCount">0</h2></div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title"><h3>Master Data Register</h3></div>
+    <div class="grid">
+      <div>
+        <label for="masterType">Master Data Type</label>
+        <select id="masterType" onchange="changeMasterType()">
+          <option value="fleet">Fleet / Assets</option>
+          <option value="drivers">Drivers / Operators</option>
+          <option value="locations">Estates / Locations</option>
+          <option value="departments">Departments</option>
+          <option value="suppliers">Suppliers / Contractors</option>
+        </select>
+      </div>
+      <div>
+        <label for="masterSearch">Search</label>
+        <input type="text" id="masterSearch" placeholder="Search by code, name, registration or category" oninput="renderMasterTable()">
+      </div>
+      <div>
+        <label for="masterStatusFilter">Status</label>
+        <select id="masterStatusFilter" onchange="renderMasterTable()">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Available">Available</option>
+          <option value="On Trip">On Trip</option>
+          <option value="Under Maintenance">Under Maintenance</option>
+          <option value="Out of Service">Out of Service</option>
+          <option value="Reserved">Reserved</option>
+          <option value="Suspended">Suspended</option>
+        </select>
+      </div>
+    </div>
+
+    <hr>
+    <h3 id="masterFormTitle">Add Fleet / Asset</h3>
+    <input type="hidden" id="masterEditId">
+    <div id="masterFormFields" class="grid"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
+      <button class="btn primary" onclick="saveMasterRecord()">Save Master Data</button>
+      <button class="btn secondary" onclick="clearMasterForm()">Clear Form</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title"><h3 id="masterTableTitle">Fleet / Assets Register</h3></div>
+    <div class="tablewrap">
+      <table><thead id="masterTableHead"></thead><tbody id="masterTableBody"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<section id="data" class="view">
+<div class="panel"><h2>Data Control</h2><p class="small">All records are stored on the central backend server and shared across all users and devices.</p>
+<div class="actions"><button class="btn primary" onclick="exportJSON()">Export Backup (JSON)</button><button class="btn primary" style="background:var(--green);" onclick="exportCSV()">Export Comprehensive Excel Sheet (CSV)</button><button class="btn danger" onclick="clearData()">Clear Local Cache</button></div></div>
+<div class="panel"><h2>Recommended Management Reports</h2>
+<div class="metric"><span>Daily / Periodic logistics activity, performance and exceptions</span><b>Management Report</b></div>
+<div class="metric"><span>FFB planned vs actual evacuation and variance</span><b>Operations</b></div>
+<div class="metric"><span>Customer deliveries, allocations and dispatches</span><b>Customers</b></div>
+<div class="metric"><span>Fleet movement, turnaround and incidents</span><b>Fleet</b></div>
+<div class="metric"><span>Fuel issued, cost and asset usage</span><b>Fuel Control</b></div>
+<div class="metric"><span>Procurement, supplier and outstanding items</span><b>Procurement</b></div>
+<div class="metric"><span>Repairs, breakdowns and maintenance cost</span><b>Maintenance</b></div>
+<div class="metric"><span>PM due / overdue</span><b>Maintenance</b></div>
+<div class="metric"><span>Contractor performance and constraints</span><b>Contractor</b></div>
+<div class="metric"><span>Open actions, responsible officers and due dates</span><b>Follow-Up</b></div>
+</div>
+</section>
+</main>
+
+<script>
+/* =========================================================
+   BOOTSTRAP CONSTANTS
+   ========================================================= */
+const today=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)})();
+const KEY='oopplc_logistics_supply_chain_v3';
+const MASTER_CACHE_KEY='oopplc_logistics_masterdata_v1';
+const HANDOVER_CACHE_KEY='oopplc_logistics_handovers_v1';
+
+let centralRecords=[];
+let masterData=[];
+let handoverRecords=[];
+let connectedMode=true;
+let serverLoaded=false;
+
+function num(v){const n=parseFloat(v);return Number.isFinite(n)?n:0}
+function val(id){const el=document.getElementById(id);return el?el.value:''}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+function localData(){return JSON.parse(localStorage.getItem(KEY)||'[]')}
+function data(){return serverLoaded ? centralRecords : localData()}
+function put(a){centralRecords=a;serverLoaded=true;localStorage.setItem(KEY,JSON.stringify(a))}
+
+/* =========================================================
+   LOCATIONS
+   ========================================================= */
+const LOCATIONS = ['Ikoya','Irele','Ilutitun','Igbotako','Apoi','Iyansan','CHQ','Isowa','Erinje','Aye','OFS','Others'];
+
+/* =========================================================
+   DAILY RECORDS API
+   ========================================================= */
+async function loadCentralData(){
+  try{
+    const r=await fetch('/api/records',{cache:'no-store'});
+    if(!r.ok) throw new Error('API unavailable');
+    const records=await r.json();
+    if(!Array.isArray(records)) throw new Error('Bad payload');
+    centralRecords=records;
+    serverLoaded=true;
+    localStorage.setItem(KEY,JSON.stringify(records));
+    connectedMode=true;
+    return true;
+  }catch(e){
+    centralRecords=localData();
+    serverLoaded=false;
+    connectedMode=false;
+    return false;
+  }
+}
+
+async function apiSaveRecord(record){
+  try{
+    const r=await fetch('/api/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)});
+    if(!r.ok) throw new Error('Save failed');
+    const saved=await r.json();
+    centralRecords=saved.records||[...centralRecords,record];
+    serverLoaded=true;
+    localStorage.setItem(KEY,JSON.stringify(centralRecords));
+    connectedMode=true;
+    return true;
+  }catch(e){
+    const a=localData();a.push(record);put(a);connectedMode=false;
+    return false;
+  }
+}
+
+async function apiUpdateRecord(record){
+  try{
+    const r=await fetch('/api/records/'+encodeURIComponent(record.id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)});
+    if(!r.ok) throw new Error('Update failed');
+    const saved=await r.json();
+    centralRecords=saved.records||centralRecords.map(x=>x.id===record.id?record:x);
+    serverLoaded=true;
+    localStorage.setItem(KEY,JSON.stringify(centralRecords));
+    connectedMode=true;
+    return true;
+  }catch(e){
+    const a=localData().map(x=>x.id===record.id?record:x);put(a);connectedMode=false;
+    return false;
+  }
+}
+
+async function apiDeleteRecord(id){
+  try{
+    const r=await fetch('/api/records/'+encodeURIComponent(id),{method:'DELETE'});
+    if(!r.ok) throw new Error('Delete failed');
+    const saved=await r.json();
+    centralRecords=saved.records||centralRecords.filter(x=>x.id!==id);
+    serverLoaded=true;
+    localStorage.setItem(KEY,JSON.stringify(centralRecords));
+    connectedMode=true;
+    return true;
+  }catch(e){
+    put(localData().filter(x=>x.id!==id));connectedMode=false;
+    return false;
+  }
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+function show(id){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  const navBtn = document.getElementById('nav-'+id);
+  if(navBtn) navBtn.classList.add('active');
+  if(id==='handover') renderHandoverTable();
+  if(id==='masterdata'){renderMasterTable();renderMasterKPIs();}
+  if(id==='dashboard') renderDashboard();
+}
+
+/* =========================================================
+   DAILY ENTRY FORM
+   ========================================================= */
+const categoryFields={
+"FFB Evacuation":[
+["Division","e-division","text",""],["Source Location / Field","e-source_location","text","Block / field / ramp"],
+["Receiving Location","e-receiving_location","text","Mill / weighbridge / receiving point"],
+["Vehicle / Truck / Tricycle","e-vehicle","text","Vehicle number"],["Driver / Operator","e-driver","text","Name"],
+["Waybill / Evacuation Ref.","e-waybill","text","Reference number"],["Trips Completed","e-trips","number",""],
+["Planned FFB","e-planned","number","Tonnes / bunches"],["Actual FFB","e-actual","number","Tonnes / bunches"],
+["Dispatch Time","e-start","time",""],["Return / Completion Time","e-end","time",""],
+["Weight / Scale Ref.","e-weight_ref","text","Optional"],["Turnaround / Delay Reason","e-delay_reason","text","Reason if delayed"]
+],
+"Customers":[
+["Name of Customer","e-customer_name","text","Enter full customer name"],["Division","e-division","text",""],
+["Source Location / Field","e-source_location","text","Block / field / ramp"],
+["Receiving Location","e-receiving_location","text","Destination / delivery point"],
+["Vehicle / Truck / Tricycle","e-vehicle","text","Vehicle number"],["Driver / Operator","e-driver","text","Name"],
+["Waybill / Evacuation Ref.","e-waybill","text","Reference number"],["Trips Completed","e-trips","number",""],
+["Planned FFB","e-planned","number","Tonnes / bunches"],["Actual FFB","e-actual","number","Tonnes / bunches"],
+["Dispatch Time","e-start","time",""]
+],
+"Fleet Movement":[
+["Vehicle / Asset No.","e-vehicle","text","Fleet number"],["Vehicle Type","e-vehicle_type","text","Truck / tractor / tricycle"],
+["Driver / Operator","e-driver","text","Name"],["Movement From","e-from","text","Origin"],
+["Movement To","e-to","text","Destination"],["Purpose / Assignment","e-purpose","text","Reason for movement"],
+["Odometer Start","e-odo_start","number",""],["Odometer End","e-odo_end","number",""],
+["Dispatch Time","e-start","time",""],["Return Time","e-end","time",""],
+["Trips / Runs","e-trips","number",""],["Reference / Trip Sheet","e-ref","text",""],
+["Fuel Used","e-fuel_used","number","Litres"],["Incident / Breakdown Ref.","e-incident_ref","text","If applicable"]
+],
+"Fuel":[
+["Vehicle / Asset","e-vehicle","text","Asset receiving fuel"],["Fuel Type","e-fuel_type","text","Diesel / petrol"],
+["Quantity Issued","e-actual","number","Litres"],["Fuel Rate","e-fuel_rate","number","₦/litre"],
+["Total Fuel Cost","e-cost","number","₦"],["Meter / Pump Ref.","e-pump_ref","text",""],
+["Fuel Voucher / Issue No.","e-fuel_voucher","text",""],["Receiving Driver / Officer","e-driver","text","Name"],
+["Purpose","e-purpose","text","Operational purpose"],["Supplier / Station","e-responsible","text","Supplier"]
+],
+"Procurement":[
+["Item / Material Required","e-item","text","Description"],["Requesting Department","e-requesting_dept","text",""],
+["Quantity Requested","e-planned","number",""],["Quantity Received","e-actual","number",""],
+["Supplier","e-responsible","text","Supplier name"],["PO / Requisition No.","e-ref","text",""],
+["Quotation / Invoice Ref.","e-invoice_ref","text",""],["Unit Price","e-unit_price","number","₦"],
+["Total Cost","e-cost","number","₦"],["Order Date","e-order_date","date",""],
+["Expected Delivery","e-delivery_date","date",""],["Actual Delivery","e-actual_delivery","date",""],
+["Quality / Specification Check","e-quality_check","text","Passed / issue"]
+],
+"Maintenance":[
+["Asset / Vehicle No.","e-vehicle","text",""],["Maintenance Type","e-maint_type","text","Corrective / breakdown"],
+["Fault / Defect","e-fault","text",""],["Reported By","e-reporter2","text",""],
+["Date Reported","e-reported_date","date",""],["Downtime Start","e-downtime_start","time",""],
+["Downtime End","e-downtime_end","time",""],["Parts / Materials Used","e-parts","text",""],
+["Technician / Workshop","e-technician","text",""],["Repair Cost","e-cost","number","₦"],
+["Job Card / Ref.","e-ref","text",""],["Current Condition","e-condition","text",""],
+["Return to Service Date","e-return_service","date",""]
+],
+"Preventive Maintenance":[
+["Asset / Vehicle No.","e-vehicle","text",""],["PM Schedule / Service Type","e-pm_type","text",""],
+["Service Due Date","e-service_due","date",""],["Last Service Date","e-last_service","date",""],
+["Odometer / Hour Meter","e-meter","number",""],["Checklist Completed","e-checklist","text","Yes / No"],
+["Parts / Consumables Used","e-parts","text",""],["Technician / Workshop","e-technician","text",""],
+["Service Cost","e-cost","number","₦"],["Next Service Due","e-next_service","date",""],
+["Job Card / Ref.","e-ref","text",""],["Outstanding Defects","e-defects","text",""]
+],
+"Contractor Performance":[
+["Contractor","e-responsible","text",""],["Contract / Work Order No.","e-ref","text",""],
+["Service / Work Activity","e-service","text",""],["Estate / Division","e-division2","text",""],
+["Planned Quantity / Output","e-planned","number",""],["Actual Quantity / Output","e-actual","number",""],
+["Target Achievement %","e-achievement","number","%"],["Cost / Value","e-cost","number","₦"],
+["Delay / Constraint","e-delay","text",""],["Officer Monitoring","e-officer2","text",""]
+],
+"Other":[
+["Activity Description","e-description","text",""],["Location","e-location","text",""],
+["Asset / Item","e-asset","text",""],["Responsible Person / Supplier","e-responsible","text",""],
+["Reference No.","e-ref","text",""],["Planned Quantity","e-planned","number",""],
+["Actual Quantity","e-actual","number",""],["Cost","e-cost","number","₦"],
+["Start Time","e-start","time",""],["End Time","e-end","time",""]
+]};
+
+function renderCategoryFields(){
+  const cat=val('e-category')||'FFB Evacuation';
+  const box=document.getElementById('categoryFields');
+  const fields=categoryFields[cat]||categoryFields.Other;
+  let h='<div class="section-title">'+esc(cat)+' — Activity-Specific Details</div><div class="grid">';
+  fields.forEach(f=>{
+    const [label,id,type,ph]=f;
+    h+='<div><label>'+esc(label)+'</label><input type="'+type+'" id="'+id+'" placeholder="'+esc(ph||'')+'" step="0.01"></div>';
+  });
+  h+='</div>';
+  box.innerHTML=h;
+}
+
+function fillEntryEstateOptions(){
+  const sel=document.getElementById('e-estate');
+  if(!sel) return;
+  const current=sel.value;
+  sel.innerHTML='<option value="">Select Estate / Location</option>'+LOCATIONS.map(l=>'<option>'+esc(l)+'</option>').join('');
+  if(LOCATIONS.includes(current)) sel.value=current;
+}
+
+function collectDynamic(){
+  const cat=val('e-category')||'FFB Evacuation',obj={};
+  (categoryFields[cat]||categoryFields.Other).forEach(f=>{const el=document.getElementById(f[1]);if(el)obj[f[1]]=el.value});
+  return obj;
+}
+
+function clearEntry(){
+  document.getElementById('e-editing-id').value='';
+  document.getElementById('form-heading').innerText='Daily Logistics & Supply Chain Entry';
+  document.getElementById('btn-save').innerText='Save Activity';
+  document.querySelectorAll('#entry input,#entry textarea').forEach(x=>x.value='');
+  document.getElementById('e-category').value='FFB Evacuation';
+  document.getElementById('e-status').value='Completed';
+  document.getElementById('e-priority').value='Normal';
+  document.getElementById('e-date').value=today;
+  document.getElementById('e-estate').value=LOCATIONS[0]||'';
+  renderCategoryFields();
+}
+
+function setEntryMessage(msg,ok=true){
+  const el=document.getElementById('entryMessage');
+  if(!el)return;
+  el.className=ok?'entry-message-ok':'entry-message-err';
+  el.textContent=msg;
+}
+
+async function saveEntry(){
+  const editId = val('e-editing-id');
+  const dynamic=collectDynamic();
+  const existing = editId ? data().find(x=>x.id===Number(editId)) : null;
+
+  const x={
+    id: editId ? Number(editId) : Date.now(),
+    date: val('e-date')||today,
+    department: val('e-department').trim(),
+    estate: val('e-estate').trim(),
+    category: val('e-category'),
+    status: val('e-status'),
+    priority: val('e-priority'),
+    reporter: val('e-reporter'),
+    issue: val('e-issue'),
+    action: val('e-action'),
+    officer: val('e-officer'),
+    due: val('e-due'),
+    remarks: val('e-remarks'),
+    details: dynamic,
+    createdAt: existing ? (existing.createdAt||new Date().toISOString()) : new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  x.asset=dynamic['e-customer_name']||dynamic['e-asset']||dynamic['e-vehicle']||dynamic['e-item']||dynamic['e-description']||'';
+  x.responsible=dynamic['e-customer_name']||dynamic['e-responsible']||dynamic['e-driver']||dynamic['e-technician']||'';
+  x.ref=dynamic['e-ref']||dynamic['e-waybill']||'';
+  x.planned=num(dynamic['e-planned']);
+  x.actual=num(dynamic['e-actual']||dynamic['e-received']);
+  x.cost=num(dynamic['e-cost']||dynamic['e-unit_price']);
+  x.start=dynamic['e-start']||dynamic['e-downtime_start']||'';
+  x.end=dynamic['e-end']||dynamic['e-downtime_end']||'';
+
+  if(!x.date||!x.department||!x.estate||!x.category){
+    setEntryMessage('Please complete Date, Department, Estate / Location and Activity Category.',false);
+    return false;
+  }
+
+  const ok=editId ? await apiUpdateRecord(x) : await apiSaveRecord(x);
+  clearEntry();
+  renderAll();
+  setEntryMessage(
+    ok ? (editId?'Activity updated on the central server.':'Activity saved to the central server.')
+       : 'Activity saved locally. The central server is not currently reachable.',
+    ok
+  );
+  return true;
+}
+
+async function saveAndNew(){
+  const keep={date: val('e-date'),department: val('e-department'),estate: val('e-estate'),category: val('e-category')};
+  const ok=await saveEntry();
+  if(!ok) return;
+  document.getElementById('e-date').value=keep.date||today;
+  document.getElementById('e-department').value=keep.department;
+  document.getElementById('e-estate').value=keep.estate;
+  document.getElementById('e-category').value=keep.category||'FFB Evacuation';
+  renderCategoryFields();
+}
+
+function editEntry(id){
+  const item=data().find(x=>x.id===id);
+  if(!item){alert('Record not found.');return}
+  show('entry');
+  document.getElementById('e-editing-id').value=item.id;
+  document.getElementById('form-heading').innerText='Edit Daily Entry (ID: '+item.id+')';
+  document.getElementById('btn-save').innerText='Update Activity';
+  document.getElementById('e-date').value=item.date||'';
+  document.getElementById('e-department').value=item.department||'';
+  document.getElementById('e-estate').value=item.estate||'';
+  document.getElementById('e-category').value=item.category||'FFB Evacuation';
+  document.getElementById('e-status').value=item.status||'Completed';
+  document.getElementById('e-priority').value=item.priority||'Normal';
+  document.getElementById('e-reporter').value=item.reporter||'';
+  document.getElementById('e-issue').value=item.issue||'';
+  document.getElementById('e-action').value=item.action||'';
+  document.getElementById('e-officer').value=item.officer||'';
+  document.getElementById('e-due').value=item.due||'';
+  document.getElementById('e-remarks').value=item.remarks||'';
+  renderCategoryFields();
+  const d=item.details||{};
+  Object.keys(d).forEach(k=>{const el=document.getElementById(k);if(el)el.value=d[k]});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function deleteEntry(id){
+  if(confirm('Delete this record?')){
+    const ok=await apiDeleteRecord(id);
+    renderAll();
+    if(!ok) alert('Record deleted from local cache, but the central server was unavailable.');
+  }
+}
+
+/* =========================================================
+   DASHBOARD / REPORTS / REGISTERS (unchanged core logic)
+   ========================================================= */
+function filtered(date='',estate=''){return data().filter(x=>(!date||x.date===date)&&(!estate||x.estate===estate))}
+function estates(){const fromData=data().map(x=>x.estate).filter(Boolean);return [...new Set([...LOCATIONS,...fromData])].sort()}
+function fillEstates(){
+  ['dashEstate','reportEstate'].forEach(id=>{
+    const s=document.getElementById(id),old=s.value;
+    s.innerHTML='<option value="">All Estates</option>'+estates().map(e=>'<option>'+esc(e)+'</option>').join('');
+    s.value=estates().includes(old)?old:'';
+  });
+}
+function badge(s){const c=['Completed'].includes(s)?'b-ok':['Delayed','Pending','In Progress'].includes(s)?'b-warn':['Breakdown','Critical'].includes(s)?'b-bad':'b-neutral';return '<span class="badge '+c+'">'+esc(s||'-')+'</span>'}
+
+function table(id,a,cols,isEditable=true){
+  const host=document.getElementById(id);
+  if(!host) return;
+  if(!a.length){host.innerHTML='<div class="small">No records found.</div>';return}
+  let h='<table><thead><tr>'+cols.map(c=>'<th>'+c[1]+'</th>').join('')+(isEditable?'<th>Actions</th>':'')+'</tr></thead><tbody>';
+  a.forEach(x=>{
+    h+='<tr>'+cols.map(c=>'<td>'+(c[0]==='status'?badge(x[c[0]]):esc(x[c[0]]))+'</td>').join('');
+    if(isEditable) h+='<td><button class="btn-sm warning" onclick="editEntry('+x.id+')">Edit</button><button class="btn-sm danger" onclick="deleteEntry('+x.id+')">Del</button></td>';
+    h+='</tr>';
+  });
+  host.innerHTML=h+'</tbody></table>';
+}
+
+function renderAll(){
+  fillEstates();
+  renderDashboard();
+  renderRecent();
+  renderRegister();
+  if(document.getElementById('report').classList.contains('active')) renderReport();
+  if(document.getElementById('masterTableBody')){renderMasterTable();renderMasterKPIs();}
+  if(document.getElementById('handoverTable')) renderHandoverTable();
+}
+
+function renderDashboard(){
+  const date=val('dashDate')||today,estate=val('dashEstate'),a=filtered(date,estate);
+  const ffb=a.filter(x=>['FFB Evacuation','Customers'].includes(x.category));
+  const fuel=a.filter(x=>x.category==='Fuel');
+  const ffbP=ffb.reduce((s,x)=>s+num(x.planned),0);
+  const ffbA=ffb.reduce((s,x)=>s+num(x.actual),0);
+  const cost=a.reduce((s,x)=>s+num(x.cost),0);
+  const exceptions=a.filter(x=>['Delayed','Pending','Breakdown','Critical'].includes(x.status)||x.issue);
+  const open=a.filter(x=>x.officer&&x.status!=='Completed');
+
+  document.getElementById('kpis').innerHTML=[
+    ['Activities',a.length],['FFB Planned',ffbP.toFixed(2)],['FFB Actual',ffbA.toFixed(2)],
+    ['FFB Achievement',ffbP?(ffbA/ffbP*100).toFixed(1)+'%':'0%'],
+    ['Fuel Issued',fuel.reduce((s,x)=>s+num(x.actual),0).toFixed(2)+' L'],
+    ['Total Cost','₦'+cost.toLocaleString()],['Exceptions',exceptions.length],['Open Follow-Up',open.length]
+  ].map(k=>'<div class="kpi"><div class="l">'+k[0]+'</div><div class="n">'+k[1]+'</div></div>').join('');
+
+  document.getElementById('exceptions').innerHTML=exceptions.length
+    ? exceptions.slice(0,20).map(x=>'<div class="alert"><b>'+esc(x.category)+'</b> — '+esc(x.estate)+' — '+esc(x.issue||x.status)+'<br><span class="small">Action: '+esc(x.action||'Not stated')+' | Officer: '+esc(x.officer||'Not assigned')+' | Due: '+esc(x.due||'-')+'</span></div>').join('')
+    : '<div class="ok">No major exceptions recorded.</div>';
+
+  const close=[['Daily entries captured',a.length>0],['FFB planned/actual recorded',ffb.length===0||ffb.some(x=>num(x.planned)>0||num(x.actual)>0)],['Fuel transactions reviewed',true],['Exceptions reviewed',true],['Open actions assigned',open.length===0]];
+  document.getElementById('closeout').innerHTML=close.map(x=>'<div class="metric"><span>'+x[0]+'</span><b class="'+(x[1]?'ok':'warn')+'">'+(x[1]?'Done':'Review')+'</b></div>').join('');
+
+  const by={};a.forEach(x=>by[x.category]=(by[x.category]||0)+1);
+  document.getElementById('categorySummary').innerHTML=Object.keys(by).length
+    ? Object.entries(by).map(x=>'<div class="metric"><span>'+esc(x[0])+'</span><b>'+x[1]+'</b></div>').join('')
+    : '<div class="small">No activity.</div>';
+
+  document.getElementById('followSummary').innerHTML=
+    '<div class="metric"><span>Open</span><b class="warn">'+open.length+'</b></div>'+
+    '<div class="metric"><span>Overdue</span><b class="bad">'+open.filter(x=>x.due&&x.due<today).length+'</b></div>'+
+    '<div class="metric"><span>Unassigned exceptions</span><b class="bad">'+exceptions.filter(x=>!x.officer).length+'</b></div>';
+
+  document.getElementById('snapshot').innerHTML=Object.keys(by).length
+    ? '<div class="metric"><span>Total transactions</span><b>'+a.length+'</b></div>'+
+      '<div class="metric"><span>Total recorded cost</span><b>₦'+cost.toLocaleString()+'</b></div>'+
+      '<div class="metric"><span>Exception rate</span><b>'+(a.length?(exceptions.length/a.length*100).toFixed(1):0)+'%</b></div>'
+    : '<div class="small">No records for selected date.</div>';
+}
+
+function renderRecent(){
+  const a=data().slice().sort((x,y)=>y.id-x.id).slice(0,100);
+  table('recentEntries',a,[['date','Date'],['department','Department'],['estate','Estate'],['category','Category'],['asset','Customer / Asset'],['planned','Planned'],['actual','Actual'],['cost','Cost'],['status','Status'],['issue','Issue'],['officer','Follow-Up Officer']],true);
+}
+
+function renderRegister(){
+  const type=val('regType')||'all',from=val('regFrom'),to=val('regTo');
+  const a=data().filter(x=>(type==='all'||x.category===type)&&(!from||x.date>=from)&&(!to||x.date<=to)).sort((x,y)=>y.id-x.id);
+  table('registerTable',a,[['date','Date'],['department','Department'],['estate','Estate'],['category','Category'],['asset','Customer / Asset'],['responsible','Customer / Operator / Supplier'],['ref','Reference'],['planned','Planned'],['actual','Actual'],['cost','Cost'],['status','Status'],['priority','Priority'],['issue','Issue / Constraint'],['action','Action Taken / Required'],['officer','Follow-Up Officer'],['due','Due Date']],true);
+}
+
+function handleTimeframeChange(){
+  const tf=val('reportTimeframe');
+  const singleBox=document.getElementById('singleDateBox');
+  const fromBox=document.getElementById('rangeFromBox');
+  const toBox=document.getElementById('rangeToBox');
+  if(tf==='daily'){singleBox.style.display='block';fromBox.style.display='none';toBox.style.display='none';return}
+  singleBox.style.display='none';fromBox.style.display='block';toBox.style.display='block';
+  const fromEl=document.getElementById('reportFrom'),toEl=document.getElementById('reportTo');
+  if(!toEl.value) toEl.value=today;
+  if(!fromEl.value){
+    const d=new Date(today+'T00:00:00');
+    if(tf==='weekly') d.setDate(d.getDate()-6);
+    else if(tf==='monthly') d.setDate(1);
+    else d.setDate(d.getDate()-30);
+    d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+    fromEl.value=d.toISOString().slice(0,10);
+  }
+}
+
+function renderReport(){
+  const tf=val('reportTimeframe'),estate=val('reportEstate'),prepared=val('preparedBy')||'________________';
+  let a=data(),timeframeText='';
+  if(tf==='daily'){
+    const date=val('reportDate')||today;
+    a=a.filter(x=>x.date===date);
+    timeframeText='Daily Report Date: '+date;
+  }else{
+    const from=val('reportFrom'),to=val('reportTo');
+    if(from&&to){a=a.filter(x=>x.date>=from&&x.date<=to);timeframeText=tf.toUpperCase()+' Period: '+from+' to '+to}
+    else timeframeText=tf.toUpperCase()+' Report (All Dates)';
+  }
+  if(estate) a=a.filter(x=>x.estate===estate);
+  const ffb=a.filter(x=>['FFB Evacuation','Customers'].includes(x.category));
+  const fuel=a.filter(x=>x.category==='Fuel');
+  const planned=ffb.reduce((s,x)=>s+num(x.planned),0);
+  const actual=ffb.reduce((s,x)=>s+num(x.actual),0);
+  const cost=a.reduce((s,x)=>s+num(x.cost),0);
+  const exceptions=a.filter(x=>['Delayed','Pending','Breakdown','Critical'].includes(x.status)||x.issue);
+  const pending=a.filter(x=>x.officer&&x.status!=='Completed');
+
+  let html='<div class="panel"><div class="report-title"><h2>OOPPLC MANAGEMENT LOGISTICS & SUPPLY CHAIN REPORT</h2><div class="small">'+esc(timeframeText)+' | Estate: '+esc(estate||'All Estates')+'</div></div>';
+  html+='<div class="summarybox"><b>Prepared By:</b> '+esc(prepared)+' &nbsp; | &nbsp; <b>Report Type:</b> '+esc(tf.toUpperCase())+' &nbsp; | &nbsp; <b>Total Activities Executed:</b> '+a.length+'</div>';
+  html+='<div class="section-title">1. EXECUTIVE SUMMARY & KPIS</div>';
+  html+='<div class="kpis">'+[['FFB Planned',planned.toFixed(2)],['FFB Actual',actual.toFixed(2)],['Achievement',planned?(actual/planned*100).toFixed(1)+'%':'0%'],['Fuel Issued',fuel.reduce((s,x)=>s+num(x.actual),0).toFixed(2)+' L'],['Total Cost','₦'+cost.toLocaleString()],['Exceptions',exceptions.length]].map(k=>'<div class="kpi"><div class="l">'+k[0]+'</div><div class="n">'+k[1]+'</div></div>').join('')+'</div>';
+  html+='<div class="section-title">2. DETAILED ACTIVITY REGISTER</div><div class="tablewrap" id="reportActivities"></div>';
+  html+='<div class="section-title">3. OPERATIONAL EXCEPTIONS</div><div id="reportExceptions">'+(exceptions.length
+    ? exceptions.map(x=>'<div class="alert"><b>'+esc(x.category)+' | Dept: '+esc(x.department||'N/A')+' | Estate: '+esc(x.estate)+'</b><br>Issue: '+esc(x.issue||x.status)+'<br>Action Required: '+esc(x.action||'Not recorded')+'<br>Responsible Officer: '+esc(x.officer||'Not assigned')+' | Due: '+esc(x.due||'-')+' | Priority: '+esc(x.priority||'Normal')+'</div>').join('')
+    : '<div class="ok">No major exceptions recorded.</div>')+'</div>';
+  html+='<div class="section-title">4. OPEN FOLLOW-UP ACTIONS</div><div class="tablewrap" id="reportPending"></div>';
+  html+='<div class="section-title">5. MANAGEMENT ATTENTION & STRATEGIC RECOMMENDATIONS</div><textarea id="managementNote"></textarea>';
+  html+='<div class="section-title">6. OFFICIAL SIGN-OFF & APPROVAL</div><div class="grid"><div><label>Prepared By / Signature</label><input></div><div><label>Reviewed By</label><input></div><div><label>Approved By</label><input></div></div>';
+  html+='<div class="report-footer">OOPPLC Logistics & Supply Chain Management System • Generated '+new Date().toLocaleString()+'</div></div>';
+
+  document.getElementById('reportOutput').innerHTML=html;
+  table('reportActivities',a,[['date','Date'],['department','Department'],['estate','Estate'],['category','Category'],['asset','Customer / Asset'],['responsible','Customer / Supplier'],['planned','Planned'],['actual','Actual'],['cost','Cost'],['status','Status'],['issue','Issue'],['officer','Follow-Up']],false);
+  table('reportPending',pending,[['category','Category'],['department','Department'],['estate','Estate'],['action','Action Required'],['officer','Responsible Officer'],['due','Due Date'],['priority','Priority'],['status','Status']],false);
+}
+
+/* =========================================================
+   EXPORTS
+   ========================================================= */
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify({
+    system:'OOPPLC Logistics & Supply Chain Reporting System',
+    exportedAt:new Date().toISOString(),
+    records:data(), masterData, handovers:handoverRecords
+  },null,2)],{type:'application/json'});
+  download(blob,'OOPPLC_Logistics_Backup.json');
+}
+function exportCSV(){
+  const a=data();
+  if(!a.length){alert('No data to export!');return}
+  const allKeys=new Set(['id','date','department','estate','category','status','priority','reporter','asset','responsible','ref','planned','actual','cost','start','end','issue','action','officer','due','remarks','createdAt','updatedAt']);
+  a.forEach(x=>{if(x.details)Object.keys(x.details).forEach(k=>allKeys.add('detail_'+k))});
+  const cols=Array.from(allKeys);
+  const rows=[cols];
+  a.forEach(x=>{rows.push(cols.map(c=>c.startsWith('detail_')?(x.details?(x.details[c.replace('detail_','')]??''):''):(x[c]??'')))});
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  download(new Blob([csv],{type:'text/csv'}),'OOPPLC_Logistics_Comprehensive_Report.csv');
+}
+function clearData(){
+  if(confirm('Clear local cache only? Server records are not affected.')){
+    centralRecords=[];masterData=[];handoverRecords=[];
+    serverLoaded=true;
+    localStorage.removeItem(KEY);localStorage.removeItem(MASTER_CACHE_KEY);localStorage.removeItem(HANDOVER_CACHE_KEY);
+    renderAll();
+    alert('Local cache cleared. Server data untouched.');
+  }
+}
+
+/* =========================================================
+   ASSET HANDOVER / RETRIEVAL
+   ========================================================= */
+function toggleHandoverFields(){
+  const t = val('h-type');
+  document.getElementById('h-issued-by-wrap').style.display    = (t==='Handover')  ? 'block' : 'none';
+  document.getElementById('h-retrieved-by-wrap').style.display = (t==='Retrieval') ? 'block' : 'none';
+}
+function toggleAssetTypeOther(){
+  const t = val('h-asset-type');
+  document.getElementById('h-asset-type-other-wrap').style.display = (t==='Others') ? 'block' : 'none';
+}
+function setHandoverMessage(msg,ok=true){
+  const el=document.getElementById('handoverMessage');
+  if(!el)return;
+  el.className=ok?'entry-message-ok':'entry-message-err';
+  el.textContent=msg;
+}
+
+function clearHandoverForm(){
+  document.getElementById('h-editing-id').value='';
+  document.getElementById('handover-form-title').innerText='Company Asset Handover / Retrieval';
+  document.getElementById('h-btn-save').innerText='Save Record';
+  ['h-type','h-staff-name','h-staff-phone','h-asset-type','h-asset-type-other','h-make-model',
+   'h-chassis','h-engine','h-registration','h-odometer','h-issued-by','h-retrieved-by','h-remarks']
+    .forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  document.getElementById('h-date').value=today;
+  toggleHandoverFields();
+  toggleAssetTypeOther();
+  setHandoverMessage('');
+}
+
+async function loadHandovers(){
+  try{
+    const r=await fetch('/api/asset-handovers',{cache:'no-store'});
+    if(!r.ok) throw new Error('unavailable');
+    const records=await r.json();
+    if(!Array.isArray(records)) throw new Error('bad payload');
+    handoverRecords=records;
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(records));
+    return true;
+  }catch(e){
+    handoverRecords=JSON.parse(localStorage.getItem(HANDOVER_CACHE_KEY)||'[]');
+    return false;
+  }
+}
+
+async function apiSaveHandover(rec){
+  try{
+    const r=await fetch('/api/asset-handovers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)});
+    if(!r.ok) throw new Error('Save failed');
+    const saved=await r.json();
+    handoverRecords=saved.records||[rec,...handoverRecords];
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(handoverRecords));
+    return true;
+  }catch(e){
+    handoverRecords=[rec,...JSON.parse(localStorage.getItem(HANDOVER_CACHE_KEY)||'[]')];
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(handoverRecords));
+    return false;
+  }
+}
+
+async function apiUpdateHandover(rec){
+  try{
+    const r=await fetch('/api/asset-handovers/'+encodeURIComponent(rec.id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)});
+    if(!r.ok) throw new Error('Update failed');
+    const saved=await r.json();
+    handoverRecords=saved.records||handoverRecords.map(x=>x.id===rec.id?rec:x);
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(handoverRecords));
+    return true;
+  }catch(e){
+    handoverRecords=handoverRecords.map(x=>x.id===rec.id?rec:x);
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(handoverRecords));
+    return false;
+  }
+}
+
+async function apiDeleteHandover(id){
+  try{
+    const r=await fetch('/api/asset-handovers/'+encodeURIComponent(id),{method:'DELETE'});
+    if(!r.ok) throw new Error('Delete failed');
+    const saved=await r.json();
+    handoverRecords=saved.records||handoverRecords.filter(x=>x.id!==id);
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(handoverRecords));
+    return true;
+  }catch(e){
+    handoverRecords=handoverRecords.filter(x=>x.id!==id);
+    localStorage.setItem(HANDOVER_CACHE_KEY,JSON.stringify(handoverRecords));
+    return false;
+  }
+}
+
+async function saveHandover(){
+  const editId = val('h-editing-id');
+  const type = val('h-type');
+  const assetType = val('h-asset-type');
+
+  if(!type){setHandoverMessage('Please select Handover or Retrieval.',false);return}
+  if(!val('h-date')){setHandoverMessage('Please set the date.',false);return}
+  if(!val('h-staff-name').trim()){setHandoverMessage('Staff Name is required.',false);return}
+  if(!val('h-staff-phone').trim()){setHandoverMessage('Staff Phone Number is required.',false);return}
+  if(!assetType){setHandoverMessage('Asset Type is required.',false);return}
+  if(assetType==='Others' && !val('h-asset-type-other').trim()){
+    setHandoverMessage('Please specify the asset type.',false);return;
+  }
+  if(type==='Handover' && !val('h-issued-by').trim()){
+    setHandoverMessage('Issued By is required for a Handover.',false);return;
+  }
+  if(type==='Retrieval' && !val('h-retrieved-by').trim()){
+    setHandoverMessage('Retrieved By is required for a Retrieval.',false);return;
+  }
+
+  const rec={
+    id: editId ? Number(editId) : Date.now(),
+    type,
+    date: val('h-date'),
+    staffName: val('h-staff-name').trim(),
+    staffPhone: val('h-staff-phone').trim(),
+    assetType,
+    assetTypeOther: assetType==='Others' ? val('h-asset-type-other').trim() : '',
+    makeModel: val('h-make-model').trim(),
+    chassisNumber: val('h-chassis').trim(),
+    engineNumber: val('h-engine').trim(),
+    registrationNumber: val('h-registration').trim(),
+    odometer: val('h-odometer') === '' ? '' : num(val('h-odometer')),
+    issuedBy: type==='Handover' ? val('h-issued-by').trim() : '',
+    retrievedBy: type==='Retrieval' ? val('h-retrieved-by').trim() : '',
+    remarks: val('h-remarks'),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  if(editId){
+    const existing=handoverRecords.find(x=>x.id===Number(editId));
+    if(existing) rec.createdAt = existing.createdAt || rec.createdAt;
+  }
+
+  const ok = editId ? await apiUpdateHandover(rec) : await apiSaveHandover(rec);
+  clearHandoverForm();
+  renderHandoverTable();
+  setHandoverMessage(
+    ok ? (editId?'Handover record updated on the server.':'Handover record saved to the server.')
+       : 'Record saved locally. The server was unreachable.',
+    ok
+  );
+}
+
+function editHandover(id){
+  const rec = handoverRecords.find(x=>x.id===id);
+  if(!rec){alert('Record not found.');return}
+  show('handover');
+  document.getElementById('h-editing-id').value=rec.id;
+  document.getElementById('handover-form-title').innerText='Edit Handover / Retrieval Record (ID: '+rec.id+')';
+  document.getElementById('h-btn-save').innerText='Update Record';
+  document.getElementById('h-type').value=rec.type||'';
+  document.getElementById('h-date').value=rec.date||'';
+  document.getElementById('h-staff-name').value=rec.staffName||'';
+  document.getElementById('h-staff-phone').value=rec.staffPhone||'';
+  document.getElementById('h-asset-type').value=rec.assetType||'';
+  document.getElementById('h-asset-type-other').value=rec.assetTypeOther||'';
+  document.getElementById('h-make-model').value=rec.makeModel||'';
+  document.getElementById('h-chassis').value=rec.chassisNumber||'';
+  document.getElementById('h-engine').value=rec.engineNumber||'';
+  document.getElementById('h-registration').value=rec.registrationNumber||'';
+  document.getElementById('h-odometer').value=rec.odometer===''?'':rec.odometer;
+  document.getElementById('h-issued-by').value=rec.issuedBy||'';
+  document.getElementById('h-retrieved-by').value=rec.retrievedBy||'';
+  document.getElementById('h-remarks').value=rec.remarks||'';
+  toggleHandoverFields();
+  toggleAssetTypeOther();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function deleteHandover(id){
+  if(!confirm('Delete this handover/retrieval record?')) return;
+  const ok=await apiDeleteHandover(id);
+  renderHandoverTable();
+  if(!ok) alert('Deleted from local cache only.');
+}
+
+function renderHandoverTable(){
+  const host=document.getElementById('handoverTable');
+  if(!host) return;
+  const t = val('h-filter-type');
+  const q = (val('h-filter-search')||'').toLowerCase();
+
+  const rows = handoverRecords.filter(r=>{
+    if(t && r.type!==t) return false;
+    if(!q) return true;
+    const blob = [
+      r.staffName, r.staffPhone, r.assetType, r.assetTypeOther, r.makeModel,
+      r.chassisNumber, r.engineNumber, r.registrationNumber, r.issuedBy, r.retrievedBy, r.remarks
+    ].join(' ').toLowerCase();
+    return blob.includes(q);
+  }).sort((a,b)=>b.id-a.id);
+
+  if(!rows.length){host.innerHTML='<div class="small">No handover / retrieval records found.</div>';return}
+
+  const cols=[
+    ['date','Date'],['type','Type'],['staffName','Staff'],['staffPhone','Phone'],
+    ['assetType','Asset Type'],['makeModel','Make / Model'],['chassisNumber','Chassis No.'],
+    ['engineNumber','Engine No.'],['registrationNumber','Registration No.'],['odometer','Odometer'],
+    ['issuedBy','Issued By'],['retrievedBy','Retrieved By'],['remarks','Remarks']
+  ];
+
+  let h='<table><thead><tr>'+cols.map(c=>'<th>'+c[1]+'</th>').join('')+'<th>Actions</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    h+='<tr>'+cols.map(c=>{
+      if(c[0]==='type'){
+        const cls = r.type==='Handover'?'badge-handover':'badge-retrieval';
+        return '<td><span class="badge '+cls+'">'+esc(r.type||'-')+'</span></td>';
+      }
+      if(c[0]==='assetType'){
+        return '<td>'+esc((r.assetType||'') + (r.assetTypeOther ? ' — '+r.assetTypeOther : ''))+'</td>';
+      }
+      return '<td>'+esc(r[c[0]]??'')+'</td>';
+    }).join('');
+    h+='<td><button class="btn-sm warning" onclick="editHandover('+r.id+')">Edit</button><button class="btn-sm danger" onclick="deleteHandover('+r.id+')">Del</button></td>';
+    h+='</tr>';
+  });
+  host.innerHTML=h+'</tbody></table>';
+}
+
+/* =========================================================
+   MASTER DATA — SHARED via /api/masterdata
+   ========================================================= */
+const MASTER_SCHEMAS = {
+  fleet: {
+    title: "Fleet / Assets", singular: "Fleet / Asset",
+    fields: [
+      { key: "assetCode", label: "Asset No.", type: "text", required: true },
+      { key: "registrationNo", label: "Registration No.", type: "text" },
+      { key: "assetType", label: "Vehicle / Asset Type", type: "text", required: true },
+      { key: "makeModel", label: "Make / Model", type: "text" },
+      { key: "department", label: "Department", type: "text" },
+      { key: "location", label: "Estate / Location", type: "text" },
+      { key: "assignedOperator", label: "Assigned Driver / Operator", type: "text" },
+      { key: "odometer", label: "Current Odometer", type: "number" },
+      { key: "fuelType", label: "Fuel Type", type: "text" },
+      { key: "status", label: "Status", type: "select", required: true,
+        options: ["Available","On Trip","Under Maintenance","Out of Service","Reserved","Inactive"] },
+      { key: "commissionDate", label: "Acquisition / Commission Date", type: "date" },
+      { key: "insuranceExpiry", label: "Insurance Expiry", type: "date" },
+      { key: "registrationExpiry", label: "Registration / License Expiry", type: "date" },
+      { key: "remarks", label: "Remarks", type: "textarea" }
+    ]
+  },
+  drivers: {
+    title: "Drivers / Operators", singular: "Driver / Operator",
+    fields: [
+      { key: "driverCode", label: "Driver ID", type: "text", required: true },
+      { key: "fullName", label: "Full Name", type: "text", required: true },
+      { key: "licenseNo", label: "Licence No.", type: "text" },
+      { key: "licenseExpiry", label: "Licence Expiry", type: "date" },
+      { key: "phone", label: "Phone", type: "tel" },
+      { key: "department", label: "Department", type: "text" },
+      { key: "location", label: "Estate / Location", type: "text" },
+      { key: "assignedAsset", label: "Assigned Asset", type: "text" },
+      { key: "status", label: "Status", type: "select", required: true,
+        options: ["Active","Inactive","Suspended"] },
+      { key: "remarks", label: "Remarks", type: "textarea" }
+    ]
+  },
+  locations: {
+    title: "Estates / Locations", singular: "Estate / Location",
+    fields: [
+      { key: "locationCode", label: "Location Code", type: "text", required: true },
+      { key: "locationName", label: "Location Name", type: "text", required: true },
+      { key: "locationType", label: "Location Type", type: "select", required: true,
+        options: ["HQ","Estate","Mill","Workshop","Division","Other"] },
+      { key: "status", label: "Status", type: "select", required: true,
+        options: ["Active","Inactive"] },
+      { key: "remarks", label: "Remarks", type: "textarea" }
+    ]
+  },
+  departments: {
+    title: "Departments", singular: "Department",
+    fields: [
+      { key: "departmentCode", label: "Department Code", type: "text", required: true },
+      { key: "departmentName", label: "Department Name", type: "text", required: true },
+      { key: "headOfficer", label: "Head / Responsible Officer", type: "text" },
+      { key: "status", label: "Status", type: "select", required: true,
+        options: ["Active","Inactive"] },
+      { key: "remarks", label: "Remarks", type: "textarea" }
+    ]
+  },
+  suppliers: {
+    title: "Suppliers / Contractors", singular: "Supplier / Contractor",
+    fields: [
+      { key: "supplierCode", label: "Supplier / Contractor Code", type: "text", required: true },
+      { key: "supplierName", label: "Name", type: "text", required: true },
+      { key: "category", label: "Category", type: "text" },
+      { key: "contactPerson", label: "Contact Person", type: "text" },
+      { key: "phone", label: "Phone", type: "tel" },
+      { key: "email", label: "Email", type: "email" },
+      { key: "location", label: "Location", type: "text" },
+      { key: "status", label: "Status", type: "select", required: true,
+        options: ["Active","Inactive"] },
+      { key: "remarks", label: "Remarks", type: "textarea" }
+    ]
+  }
+};
+
+let currentMasterType = "fleet";
+
+async function loadMasterData(){
+  try{
+    const r=await fetch('/api/masterdata',{cache:'no-store'});
+    if(!r.ok) throw new Error('unavailable');
+    const records=await r.json();
+    if(!Array.isArray(records)) throw new Error('bad payload');
+    masterData=records;
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(records));
+    return true;
+  }catch(e){
+    masterData=JSON.parse(localStorage.getItem(MASTER_CACHE_KEY)||'[]');
+    return false;
+  }
+}
+
+async function apiSaveMasterData(rec){
+  try{
+    const r=await fetch('/api/masterdata',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)});
+    if(!r.ok) throw new Error('Save failed');
+    const saved=await r.json();
+    masterData=saved.records||[rec,...masterData];
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(masterData));
+    return true;
+  }catch(e){
+    masterData=[rec,...JSON.parse(localStorage.getItem(MASTER_CACHE_KEY)||'[]')];
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(masterData));
+    return false;
+  }
+}
+
+async function apiUpdateMasterData(rec){
+  try{
+    const r=await fetch('/api/masterdata/'+encodeURIComponent(rec.id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)});
+    if(!r.ok) throw new Error('Update failed');
+    const saved=await r.json();
+    masterData=saved.records||masterData.map(x=>x.id===rec.id?rec:x);
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(masterData));
+    return true;
+  }catch(e){
+    masterData=masterData.map(x=>x.id===rec.id?rec:x);
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(masterData));
+    return false;
+  }
+}
+
+async function apiDeleteMasterData(id){
+  try{
+    const r=await fetch('/api/masterdata/'+encodeURIComponent(id),{method:'DELETE'});
+    if(!r.ok) throw new Error('Delete failed');
+    const saved=await r.json();
+    masterData=saved.records||masterData.filter(x=>x.id!==id);
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(masterData));
+    return true;
+  }catch(e){
+    masterData=masterData.filter(x=>x.id!==id);
+    localStorage.setItem(MASTER_CACHE_KEY,JSON.stringify(masterData));
+    return false;
+  }
+}
+
+function changeMasterType(){
+  currentMasterType = document.getElementById("masterType").value;
+  clearMasterForm();
+  renderMasterForm();
+  renderMasterTable();
+}
+
+function renderMasterForm(){
+  const schema = MASTER_SCHEMAS[currentMasterType];
+  const formContainer = document.getElementById("masterFormFields");
+  const formTitle = document.getElementById("masterFormTitle");
+  if (!schema || !formContainer) return;
+
+  formTitle.textContent = "Add " + schema.singular;
+  formContainer.innerHTML = "";
+
+  schema.fields.forEach(field => {
+    const wrapper = document.createElement("div");
+    const label = document.createElement("label");
+    label.setAttribute("for", "master_" + field.key);
+    label.textContent = field.label + (field.required ? " *" : "");
+    wrapper.appendChild(label);
+
+    let input;
+    if (field.type === "textarea") { input = document.createElement("textarea"); input.rows = 3; }
+    else if (field.type === "select") {
+      input = document.createElement("select");
+      const emptyOption = document.createElement("option");
+      emptyOption.value = ""; emptyOption.textContent = "Select " + field.label;
+      input.appendChild(emptyOption);
+      field.options.forEach(optionValue => {
+        const option = document.createElement("option");
+        option.value = optionValue; option.textContent = optionValue;
+        input.appendChild(option);
+      });
+    } else { input = document.createElement("input"); input.type = field.type || "text"; }
+
+    input.id = "master_" + field.key;
+    input.name = field.key;
+    if (field.required) input.required = true;
+
+    wrapper.appendChild(input);
+    formContainer.appendChild(wrapper);
+  });
+}
+
+function clearMasterForm(){
+  const editId = document.getElementById("masterEditId");
+  if (editId) editId.value = "";
+  renderMasterForm();
+  const schema = MASTER_SCHEMAS[currentMasterType];
+  if (schema) document.getElementById("masterFormTitle").textContent = "Add " + schema.singular;
+}
+
+function collectMasterFormData(){
+  const schema = MASTER_SCHEMAS[currentMasterType];
+  const values = {};
+  schema.fields.forEach(field => {
+    const element = document.getElementById("master_" + field.key);
+    values[field.key] = element ? element.value.trim() : "";
+  });
+  return values;
+}
+
+async function saveMasterRecord(){
+  const schema = MASTER_SCHEMAS[currentMasterType];
+  const values = collectMasterFormData();
+
+  for (const field of schema.fields) {
+    if (field.required && !values[field.key]) { alert(field.label + " is required."); return; }
+  }
+
+  const editId = document.getElementById("masterEditId").value;
+  const codeField = schema.fields.find(field => field.key.toLowerCase().includes("code"));
+  const recordCode = codeField ? values[codeField.key].toLowerCase() : "";
+
+  const duplicate = masterData.find(record => {
+    if (record.type !== currentMasterType) return false;
+    if (editId && String(record.id) === String(editId)) return false;
+    const existingCode = codeField ? record.data[codeField.key] : "";
+    return (recordCode && existingCode && existingCode.toLowerCase() === recordCode);
+  });
+
+  if (duplicate) { alert("A record with this code already exists in " + schema.title + "."); return; }
+
+  let ok;
+  if (editId) {
+    const rec = { id: Number(editId), type: currentMasterType, data: values, updatedAt: new Date().toISOString() };
+    const existing = masterData.find(x=>String(x.id)===String(editId));
+    if(existing) rec.createdAt = existing.createdAt || rec.updatedAt;
+    ok = await apiUpdateMasterData(rec);
+  } else {
+    const rec = { id: Date.now(), type: currentMasterType, data: values, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    ok = await apiSaveMasterData(rec);
+  }
+
+  clearMasterForm();
+  renderMasterTable();
+  renderMasterKPIs();
+  alert(ok ? "Master data saved successfully." : "Saved locally. The server was unreachable.");
+}
+
+function editMasterRecord(id){
+  const record = masterData.find(item => String(item.id) === String(id));
+  if (!record) return;
+  currentMasterType = record.type;
+  document.getElementById("masterType").value = currentMasterType;
+  document.getElementById("masterEditId").value = record.id;
+  renderMasterForm();
+  const schema = MASTER_SCHEMAS[currentMasterType];
+  schema.fields.forEach(field => {
+    const element = document.getElementById("master_" + field.key);
+    if (element) element.value = record.data[field.key] || "";
+  });
+  document.getElementById("masterFormTitle").textContent = "Edit " + schema.singular;
+  document.getElementById("masterdata").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function deleteMasterRecord(id){
+  const record = masterData.find(item => String(item.id) === String(id));
+  if (!record) return;
+  const schema = MASTER_SCHEMAS[record.type];
+  if (!confirm("Delete this record from " + schema.title + "?")) return;
+  const ok = await apiDeleteMasterData(id);
+  renderMasterTable();
+  renderMasterKPIs();
+  if (!ok) alert('Deleted from local cache only.');
+}
+
+function renderMasterTable(){
+  const schema = MASTER_SCHEMAS[currentMasterType];
+  if (!schema) return;
+
+  const searchValue = (document.getElementById("masterSearch").value || "").toLowerCase();
+  const statusValue = document.getElementById("masterStatusFilter").value;
+
+  const records = masterData.filter(record => {
+    if (record.type !== currentMasterType) return false;
+    const searchableText = JSON.stringify(record.data).toLowerCase();
+    const matchesSearch = !searchValue || searchableText.includes(searchValue);
+    const matchesStatus = !statusValue || record.data.status === statusValue;
+    return matchesSearch && matchesStatus;
+  });
+
+  document.getElementById("masterTableTitle").textContent = schema.title + " Register";
+
+  const tableHead = document.getElementById("masterTableHead");
+  const tableBody = document.getElementById("masterTableBody");
+  tableHead.innerHTML = ""; tableBody.innerHTML = "";
+
+  const headerRow = document.createElement("tr");
+  schema.fields.forEach(field => {
+    const th = document.createElement("th");
+    th.textContent = field.label;
+    headerRow.appendChild(th);
+  });
+  const actionHeader = document.createElement("th");
+  actionHeader.textContent = "Actions";
+  headerRow.appendChild(actionHeader);
+  tableHead.appendChild(headerRow);
+
+  if (records.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = schema.fields.length + 1;
+    cell.textContent = "No master data records found.";
+    row.appendChild(cell); tableBody.appendChild(row);
+    return;
+  }
+
+  records.forEach(record => {
+    const row = document.createElement("tr");
+    schema.fields.forEach(field => {
+      const cell = document.createElement("td");
+      let value = record.data[field.key] || "";
+      if (field.key === "status" && typeof badge === "function") cell.innerHTML = badge(value);
+      else cell.textContent = value;
+      row.appendChild(cell);
+    });
+    const actionCell = document.createElement("td");
+    const editButton = document.createElement("button");
+    editButton.className = "btn secondary";
+    editButton.textContent = "Edit";
+    editButton.onclick = function(){ editMasterRecord(record.id); };
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "btn danger";
+    deleteButton.textContent = "Delete";
+    deleteButton.style.marginLeft = "5px";
+    deleteButton.onclick = function(){ deleteMasterRecord(record.id); };
+    actionCell.appendChild(editButton);
+    actionCell.appendChild(deleteButton);
+    row.appendChild(actionCell);
+    tableBody.appendChild(row);
+  });
+}
+
+function renderMasterKPIs(){
+  const countByType = type => masterData.filter(record => record.type === type).length;
+  const fleetCount = document.getElementById("masterFleetCount");
+  const driverCount = document.getElementById("masterDriverCount");
+  const locationCount = document.getElementById("masterLocationCount");
+  const supplierCount = document.getElementById("masterSupplierCount");
+  if (fleetCount) fleetCount.textContent = countByType("fleet");
+  if (driverCount) driverCount.textContent = countByType("drivers");
+  if (locationCount) locationCount.textContent = countByType("locations");
+  if (supplierCount) supplierCount.textContent = countByType("suppliers");
+}
+
+function exportMasterDataCSV(){
+  if (masterData.length === 0) { alert("There is no master data to export."); return; }
+  const rows = [];
+  masterData.forEach(record => {
+    const schema = MASTER_SCHEMAS[record.type];
+    schema.fields.forEach(field => {
+      rows.push({
+        "Master Type": schema.title,
+        "Field": field.label,
+        "Value": record.data[field.key] || "",
+        "Record ID": record.id,
+        "Created At": record.createdAt,
+        "Updated At": record.updatedAt
+      });
+    });
+  });
+  const headers = Object.keys(rows[0]);
+  const csv = [headers.join(","), ...rows.map(row => headers.map(h => csvEscape(row[h])).join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url; link.download = "oopplc_master_data.csv";
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+function csvEscape(v){ if (v === null || v === undefined) return '""'; return '"' + String(v).replace(/"/g, '""') + '"'; }
+
+function initMasterData(){
+  renderMasterForm();
+  renderMasterTable();
+  renderMasterKPIs();
+}
+
+/* =========================================================
+   AUTH & BOOTSTRAP
+   ========================================================= */
+const AUTH_KEY='oopplc_logistics_authenticated_v1';
+const LOGIN_USERNAME='admin';
+const LOGIN_PASSWORD='admin123';
+
+function setAppVisibility(loggedIn){
+  const login=document.getElementById('loginPage');
+  const header=document.querySelector('header');
+  const nav=document.querySelector('nav');
+  const main=document.querySelector('main');
+  login.style.display=loggedIn?'none':'block';
+  header.style.display=loggedIn?'block':'none';
+  nav.style.display=loggedIn?'flex':'none';
+  main.style.display=loggedIn?'block':'none';
+}
+
+async function bootApp(){
+  document.getElementById('dashDate').value=today;
+  document.getElementById('reportDate').value=today;
+  document.getElementById('e-date').value=today;
+  document.getElementById('h-date').value=today;
+  handleTimeframeChange();
+  renderCategoryFields();
+  fillEntryEstateOptions();
+  toggleHandoverFields();
+  toggleAssetTypeOther();
+  initMasterData();
+  await Promise.all([loadCentralData(), loadMasterData(), loadHandovers()]);
+  renderAll();
+}
+
+async function login(){
+  const username=document.getElementById('loginUsername').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  const message=document.getElementById('loginMessage');
+
+  if(username===LOGIN_USERNAME&&password===LOGIN_PASSWORD){
+    sessionStorage.setItem(AUTH_KEY,'true');
+    message.textContent='';
+    setAppVisibility(true);
+    await bootApp();
+    show('dashboard');
+  }else{
+    message.className='entry-message-err';
+    message.textContent='Invalid username or password.';
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem(AUTH_KEY);
+  setAppVisibility(false);
+  document.getElementById('loginUsername').value='';
+  document.getElementById('loginPassword').value='';
+  const m=document.getElementById('loginMessage');
+  m.className='small';m.textContent='';
+}
+
+async function initAuth(){
+  const loggedIn=sessionStorage.getItem(AUTH_KEY)==='true';
+  setAppVisibility(loggedIn);
+  if(loggedIn){ await bootApp(); }
+}
+
+document.getElementById('loginPassword').addEventListener('keydown',function(e){
+  if(e.key==='Enter') login();
+});
+
+['dashDate','dashEstate'].forEach(id=>document.getElementById(id).addEventListener('change',renderDashboard));
+['reportTimeframe','reportDate','reportFrom','reportTo','reportEstate'].forEach(id=>document.getElementById(id).addEventListener('change',renderReport));
+['regType','regFrom','regTo'].forEach(id=>document.getElementById(id).addEventListener('change',renderRegister));
+['h-filter-type','h-filter-search'].forEach(id=>{const el=document.getElementById(id); if(el) el.addEventListener('input',renderHandoverTable);});
+
+initAuth();
+</script>
+</body>
+</html>
