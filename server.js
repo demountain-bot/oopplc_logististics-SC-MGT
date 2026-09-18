@@ -53,7 +53,17 @@ app.use(cors({ origin: true, credentials: false }));
 app.use(express.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* ── Health check ───────────────────────────────────────── */
 app.get('/health', (_req, res) => res.json({ ok: true, db: DB_PATH }));
+
+/* ── Database download — protects against accidental loss ─ */
+app.get('/api/backup', (req, res) => {
+  const token = req.query.token;
+  if (token !== process.env.BACKUP_TOKEN) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  res.download(DB_PATH, `oopplc-backup-${new Date().toISOString().slice(0,10)}.db`);
+});
 
 /* ═════════════════════════════════════════════════════════
    DAILY RECORDS
